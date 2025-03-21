@@ -3,24 +3,30 @@ import requests
 
 app = Flask(__name__)
 
-API_KEY = "b49d0b7949d148c38d34c2739761daeb"  # Replace with your OpenWeatherMap API key
-BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+BASE_URL = "https://restcountries.com/v3.1/name/"
 
 @app.route("/", methods=["GET"])
 def home():
-    city = request.args.get("city")
-    weather_data = None
+    country = request.args.get("country")
+    country_data = None
 
-    if city:
-        params = {"q": city, "appid": API_KEY, "units": "metric"}
-        response = requests.get(BASE_URL, params=params)
+    if country:
+        response = requests.get(BASE_URL + country)
 
         if response.status_code == 200:
-            weather_data = response.json()
+            country_info = response.json()[0]  # Get the first match
+            country_data = {
+                "name": country_info["name"]["common"],
+                "capital": country_info.get("capital", ["N/A"])[0],
+                "population": country_info.get("population", "N/A"),
+                "currency": list(country_info["currencies"].keys())[0] if "currencies" in country_info else "N/A",
+                "language": list(country_info["languages"].values())[0] if "languages" in country_info else "N/A",
+                "flag": country_info["flags"]["png"] if "flags" in country_info else None
+            }
         else:
-            weather_data = {"error": "Invalid city name. Please try again."}
+            country_data = {"error": "Country not found. Please check the name and try again."}
 
-    return render_template("index.html", weather=weather_data)
+    return render_template("index.html", country=country_data)
 
 if __name__ == "__main__":
     app.run(debug=True)
