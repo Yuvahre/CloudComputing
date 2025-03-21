@@ -4,23 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Forecast</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>Weather Forecast</h1>
-    <form method="POST">
+    <form method="GET">
         <label for="city">Enter City:</label>
         <input type="text" id="city" name="city" required>
-        <button type="submit">Get Weather</button>
+        <button type="submit">Check Weather</button>
     </form>
 
     {% if weather %}
         {% if "error" in weather %}
-            <p>{{ weather.error }}</p>
+            <p class="error">{{ weather.error }}</p>
         {% else %}
-            <h2>Weather in {{ weather.name }}</h2>
-            <p>Temperature: {{ weather.main.temp }}°C</p>
-            <p>Humidity: {{ weather.main.humidity }}%</p>
-            <p>Condition: {{ weather.weather[0].description }}</p>
+            <div class="weather-box">
+                <h2>{{ weather.name }}</h2>
+                <p>🌡️ Temperature: {{ weather.main.temp }}°C</p>
+                <p>💧 Humidity: {{ weather.main.humidity }}%</p>
+                <p>🌬️ Wind Speed: {{ weather.wind.speed }} m/s</p>
+                <p>☁️ Condition: {{ weather.weather[0].description }}</p>
+            </div>
         {% endif %}
     {% endif %}
 </body>
